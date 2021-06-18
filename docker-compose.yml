@@ -25,7 +25,7 @@ services:
       - ./app:/var/tmp/www
     depends_on:
       - mariadb
-    entrypoint: ['/root/.poetry/bin/poetry', 'run', 'python', 'src/old_main.py']
+    entrypoint: ['/root/.poetry/bin/poetry', 'run', 'python', 'src/main.py']
     networks: 
       - production_network
 
