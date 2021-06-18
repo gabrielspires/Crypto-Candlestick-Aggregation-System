@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+  # Banco de dados (MySQL)
+  mariadb:
+    container_name: mariadb_1
+    image: mariadb
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - production_network
+  
+  # Aplicação (Python+Poetry)
+  candle_aggregator:
+    build: 
+      dockerfile: ./docker/python.dockerfile
+      context: .
+    container_name: candle_aggregator_1
+    image: candle_aggregator
+    restart: always
+    volumes:
+      - ./app:/var/tmp/www
+    depends_on:
+      - mariadb
+    entrypoint: ['/root/.poetry/bin/poetry', 'run', 'python', 'src/old_main.py']
+    networks: 
+      - production_network
+
+# Creates a common network for the services, that enables the comunication between
+# the containers using the container_name instead of the IP address. This is necessary
+# since the containers don't retain the same IP address every time they are created.
+networks:
+  production_network:
+    driver: bridge
