@@ -5,6 +5,10 @@ from datetime import datetime
 
 
 class CandlestickAPI(object):
+    def __init__(self):
+        self.bitcoin_values = {}
+        self.monero_values = {}
+
     def get_market_data(self, url: str) -> Union[dict, None]:
         """Sends a request for the market data of all currency pairs in the exchange.
 
@@ -45,13 +49,27 @@ class CandlestickAPI(object):
 
         try:
             datetime_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            request_answer = self.get_market_data("opa")
+            request_answer = self.get_market_data(api_url)
         except Exception as e:
             print("Error with url %s : %s" % (api_url, e))
 
         if request_answer is not None:
             response = {datetime_now: float(request_answer[currency_pair]["last"])}
-
             return response
         else:
             return None
+
+    def request_BTC_data(self):
+        crypto_data = self.extract_coin_info("USDT_BTC")
+
+        if crypto_data is None:
+            print("Request failed")
+
+        self.bitcoin_values.update(crypto_data)
+
+    def request_XMR_data(self):
+        crypto_data = self.extract_coin_info("USDT_XMR")
+        if crypto_data is None:
+            print("Request failed")
+
+        self.monero_values.update(crypto_data)
