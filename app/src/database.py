@@ -35,6 +35,17 @@ class Database(object):
         low: float,
         close: float,
     ) -> None:
+        """Method that inserts data into the 'candle_data' table.
+
+        Args:
+            currency_pair (str): The currency pair beign inserted ("USDT_BTC", "USDT_XMR", etc)
+            candle_period (str): Period of the in minutes. ("1min", "5min" or "15min")
+            datetime (str): Date of the candle ("%Y-%m-%d %H:%M:%S")
+            open_ (float): First value of the period
+            high (float): Higher value of the period
+            low (float): Lower value of the period
+            close (float): Last value of the period
+        """
         sql = (
             "INSERT INTO `crypto_candles`.`candle_data` "
             "(`coin_name`, `candle_period`, `datetime`, `open`, `high`, `low`, `close`) "
