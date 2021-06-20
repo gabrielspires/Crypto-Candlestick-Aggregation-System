@@ -25,33 +25,29 @@ class Database(object):
         self.cursor.close()
         self.conn.close()
 
-    def insert_data(
-        self,
-        currency_pair: str,
-        candle_period: str,
-        datetime: str,
-        open_: float,
-        high: float,
-        low: float,
-        close: float,
-    ) -> None:
+    def insert(self, candle: dict) -> None:
         """Method that inserts data into the 'candle_data' table.
 
         Args:
-            currency_pair (str): The currency pair beign inserted ("USDT_BTC", "USDT_XMR", etc)
-            candle_period (str): Period of the in minutes. ("1min", "5min" or "15min")
-            datetime (str): Date of the candle ("%Y-%m-%d %H:%M:%S")
-            open_ (float): First value of the period
-            high (float): Higher value of the period
-            low (float): Lower value of the period
-            close (float): Last value of the period
+            candle (dict): Information about the candlestick. Created by the fetch_last_candle
+            method of the CandlestickAPI class.
         """
+
         sql = (
             "INSERT INTO `crypto_candles`.`candle_data` "
             "(`coin_name`, `candle_period`, `datetime`, `open`, `high`, `low`, `close`) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s);"
         )
-        values = (currency_pair, candle_period, datetime, open_, high, low, close)
+
+        values = (
+            candle["currency_pair"],
+            candle["period"],
+            candle["date"],
+            candle["open"],
+            candle["high"],
+            candle["low"],
+            candle["close"],
+        )
 
         try:
             self.cursor.execute(sql, values)
