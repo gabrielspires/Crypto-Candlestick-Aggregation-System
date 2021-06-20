@@ -54,11 +54,8 @@ class CandlestickAPI(object):
         request_answer = None
         datetime_now = None
 
-        try:
-            datetime_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            request_answer = self.get_market_data(api_url)
-        except Exception as e:
-            print("Error with url %s : %s" % (api_url, e))
+        datetime_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        request_answer = self.get_market_data(api_url)
 
         if request_answer is not None:
             response = {datetime_now: float(request_answer[currency_pair]["last"])}
