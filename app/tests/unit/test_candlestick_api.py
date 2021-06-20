@@ -42,11 +42,11 @@ def test_extract_coin_info(mock_get):
 
 @freeze_time("2021-01-01 00:00:00")
 @patch("src.candlestick_api.requests.get")
-def test_request_BTC_data(mock_get):
+def test_fetch_BTC_data(mock_get):
     mock_get.return_value.content = '{"USDT_BTC": {"last": 0.0}}'
 
     api = CandlestickAPI()
-    api.request_BTC_data()
+    api.fetch_BTC_data()
     datetime_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     assert datetime_now in api.bitcoin_values
@@ -54,11 +54,11 @@ def test_request_BTC_data(mock_get):
 
 @freeze_time("2021-01-01 00:00:00")
 @patch("src.candlestick_api.requests.get")
-def test_request_XMR_data(mock_get):
+def test_fetch_XMR_data(mock_get):
     mock_get.return_value.content = '{"USDT_XMR": {"last": 0.0}}'
 
     api = CandlestickAPI()
-    api.request_XMR_data()
+    api.fetch_XMR_data()
     datetime_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     assert datetime_now in api.monero_values
