@@ -5,8 +5,9 @@ from unittest.mock import patch, Mock
 from freezegun import freeze_time
 
 
+@patch("candlestick_aggregator.candlestick_api.Database")
 @patch("candlestick_aggregator.candlestick_api.requests.get")
-def test_get_market_data(mock_get):
+def test_get_market_data(mock_get, mock_db):
     mock_get.return_value.content = '{"USDT_BTC": {}}'
 
     api = CandlestickAPI()
@@ -16,8 +17,9 @@ def test_get_market_data(mock_get):
     assert "USDT_BTC" in response
 
 
+@patch("candlestick_aggregator.candlestick_api.Database")
 @patch("candlestick_aggregator.candlestick_api.requests.get")
-def test_get_market_data_invalid_command(mock_get):
+def test_get_market_data_invalid_command(mock_get, mock_db):
     error_response = '{"error": "Invalid command."}'
 
     mock_get.return_value.content = error_response
@@ -28,8 +30,9 @@ def test_get_market_data_invalid_command(mock_get):
 
 
 @freeze_time("2021-01-01 00:00:00")
+@patch("candlestick_aggregator.candlestick_api.Database")
 @patch("candlestick_aggregator.candlestick_api.requests.get")
-def test_extract_coin_info(mock_get):
+def test_extract_coin_info(mock_get, mock_db):
     mock_get.return_value.content = '{"test_pair": {"last": 0.0}}'
 
     api = CandlestickAPI()
@@ -41,8 +44,10 @@ def test_extract_coin_info(mock_get):
 
 
 @freeze_time("2021-01-01 00:00:00")
+@patch("candlestick_aggregator.candlestick_api.threading")
+@patch("candlestick_aggregator.candlestick_api.Database")
 @patch("candlestick_aggregator.candlestick_api.requests.get")
-def test_fetch_BTC_data(mock_get):
+def test_fetch_BTC_data(mock_get, mock_db, mock_threading):
     mock_get.return_value.content = '{"USDT_BTC": {"last": 0.0}}'
 
     api = CandlestickAPI()
@@ -53,8 +58,10 @@ def test_fetch_BTC_data(mock_get):
 
 
 @freeze_time("2021-01-01 00:00:00")
+@patch("candlestick_aggregator.candlestick_api.threading")
+@patch("candlestick_aggregator.candlestick_api.Database")
 @patch("candlestick_aggregator.candlestick_api.requests.get")
-def test_fetch_XMR_data(mock_get):
+def test_fetch_XMR_data(mock_get, mock_db, mock_threading):
     mock_get.return_value.content = '{"USDT_XMR": {"last": 0.0}}'
 
     api = CandlestickAPI()
@@ -64,7 +71,8 @@ def test_fetch_XMR_data(mock_get):
     assert datetime_now in api.monero_values
 
 
-def test_aggregate_coin_data():
+@patch("candlestick_aggregator.candlestick_api.Database")
+def test_aggregate_coin_data(mock_db):
     test_currency_pair = "TEST_COIN"
     test_period = "1min"
     test_coin_values = {
@@ -94,9 +102,151 @@ def test_aggregate_coin_data():
 #     assert True
 
 
-# def test_create_BTC_candles():
-#     assert True
+@freeze_time("2021-01-01 00:00:59")
+@patch("candlestick_aggregator.candlestick_api.threading")
+@patch("candlestick_aggregator.candlestick_api.Database")
+@patch("candlestick_aggregator.candlestick_api.requests.get")
+def test_create_BTC_candles_1min(mock_get, mock_db, mock_threading):
+    api = CandlestickAPI()
+    api.db.insert = Mock()
+    api.fetch_last_candle = Mock()
+
+    candle_1min = {
+        "currency_pair": "TEST_PAIR",
+        "period": "1min",
+        "date": "2021-01-01 00:00:00",
+        "open": 10.2,
+        "high": 12.5,
+        "low": 8.5,
+        "close": 9.1,
+    }
+    api.fetch_last_candle.return_value = candle_1min
+
+    api.create_BTC_candles()
+
+    api.db.insert.assert_called_with(candle_1min)
 
 
-# def test_create_XMR_candles():
-#     assert True
+@freeze_time("2021-01-01 00:04:59")
+@patch("candlestick_aggregator.candlestick_api.threading")
+@patch("candlestick_aggregator.candlestick_api.Database")
+@patch("candlestick_aggregator.candlestick_api.requests.get")
+def test_create_BTC_candles_5min(mock_get, mock_db, mock_threading):
+    api = CandlestickAPI()
+    api.db.insert = Mock()
+    api.fetch_last_candle = Mock()
+
+    candle_5min = {
+        "currency_pair": "TEST_PAIR",
+        "period": "5min",
+        "date": "2021-01-01 00:00:00",
+        "open": 10.2,
+        "high": 12.5,
+        "low": 8.5,
+        "close": 9.1,
+    }
+    api.fetch_last_candle.return_value = candle_5min
+
+    api.create_BTC_candles()
+
+    api.db.insert.assert_called_with(candle_5min)
+
+
+@freeze_time("2021-01-01 00:14:59")
+@patch("candlestick_aggregator.candlestick_api.threading")
+@patch("candlestick_aggregator.candlestick_api.Database")
+@patch("candlestick_aggregator.candlestick_api.requests.get")
+def test_create_BTC_candles_15min(mock_get, mock_db, mock_threading):
+    api = CandlestickAPI()
+    api.db.insert = Mock()
+    api.fetch_last_candle = Mock()
+
+    candle_15min = {
+        "currency_pair": "TEST_PAIR",
+        "period": "15min",
+        "date": "2021-01-01 00:00:00",
+        "open": 10.2,
+        "high": 12.5,
+        "low": 8.5,
+        "close": 9.1,
+    }
+    api.fetch_last_candle.return_value = candle_15min
+
+    api.create_BTC_candles()
+
+    api.db.insert.assert_called_with(candle_15min)
+
+
+@freeze_time("2021-01-01 00:00:59")
+@patch("candlestick_aggregator.candlestick_api.threading")
+@patch("candlestick_aggregator.candlestick_api.Database")
+@patch("candlestick_aggregator.candlestick_api.requests.get")
+def test_create_XMR_candles_1min(mock_get, mock_db, mock_threading):
+    api = CandlestickAPI()
+    api.db.insert = Mock()
+    api.fetch_last_candle = Mock()
+
+    candle_1min = {
+        "currency_pair": "TEST_PAIR",
+        "period": "1min",
+        "date": "2021-01-01 00:00:00",
+        "open": 10.2,
+        "high": 12.5,
+        "low": 8.5,
+        "close": 9.1,
+    }
+    api.fetch_last_candle.return_value = candle_1min
+
+    api.create_XMR_candles()
+
+    api.db.insert.assert_called_with(candle_1min)
+
+
+@freeze_time("2021-01-01 00:04:59")
+@patch("candlestick_aggregator.candlestick_api.threading")
+@patch("candlestick_aggregator.candlestick_api.Database")
+@patch("candlestick_aggregator.candlestick_api.requests.get")
+def test_create_XMR_candles_5min(mock_get, mock_db, mock_threading):
+    api = CandlestickAPI()
+    api.db.insert = Mock()
+    api.fetch_last_candle = Mock()
+
+    candle_5min = {
+        "currency_pair": "TEST_PAIR",
+        "period": "1min",
+        "date": "2021-01-01 00:00:00",
+        "open": 10.2,
+        "high": 12.5,
+        "low": 8.5,
+        "close": 9.1,
+    }
+    api.fetch_last_candle.return_value = candle_5min
+
+    api.create_XMR_candles()
+
+    api.db.insert.assert_called_with(candle_5min)
+
+
+@freeze_time("2021-01-01 00:14:59")
+@patch("candlestick_aggregator.candlestick_api.threading")
+@patch("candlestick_aggregator.candlestick_api.Database")
+@patch("candlestick_aggregator.candlestick_api.requests.get")
+def test_create_XMR_candles_15min(mock_get, mock_db, mock_threading):
+    api = CandlestickAPI()
+    api.db.insert = Mock()
+    api.fetch_last_candle = Mock()
+
+    candle_15min = {
+        "currency_pair": "TEST_PAIR",
+        "period": "1min",
+        "date": "2021-01-01 00:00:00",
+        "open": 10.2,
+        "high": 12.5,
+        "low": 8.5,
+        "close": 9.1,
+    }
+    api.fetch_last_candle.return_value = candle_15min
+
+    api.create_XMR_candles()
+
+    api.db.insert.assert_called_with(candle_15min)
