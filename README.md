@@ -3,13 +3,16 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-    <img src="img/bitcoin-btc-logo.png" alt="Logo" width="80" height="80">
-    <img src="img/monero-xmr-logo.png" alt="Logo" width="80" height="80">
+    <img src="docs/img/bitcoin-btc-logo.png" alt="Logo" width="80" height="80">
+    <img src="docs/img/monero-xmr-logo.png" alt="Logo" width="80" height="80">
 
   <h3 align="center">Sistema de agregação de dados de cotações de criptomoedas em tempo real</h3>
 
   <p align="center">
     Esse projeto faz uso da API pública <a href="https://docs.poloniex.com/">Poloniex</a>.
+    <br />
+    <br />
+    <a href="https://github.com/gabrielspires/Desafio-Tecnico/tree/main/docs"><strong>Explore the docs »</strong></a>
     <br />
     <br />
     <strong>
