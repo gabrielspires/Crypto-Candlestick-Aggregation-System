@@ -16,16 +16,16 @@ services:
   # Aplicação (Python+Poetry)
   candle_aggregator:
     build: 
-      dockerfile: ./docker/python.dockerfile
+      dockerfile: python.dockerfile
       context: .
     container_name: candle_aggregator_1
     image: candle_aggregator
     restart: always
     volumes:
-      - ./app:/var/tmp/www
+      - .:/app
     depends_on:
       - mariadb
-    entrypoint: ['/root/.poetry/bin/poetry', 'run', 'python', 'src/main.py']
+    entrypoint: ['/root/.poetry/bin/poetry', 'run', 'python', 'candlestick_aggregator/main.py']
     networks: 
       - production_network
 
@@ -35,3 +35,5 @@ services:
 networks:
   production_network:
     driver: bridge
+
+# poetry run pytest tests --cov=candlestick_aggregator --cov-report=html --cov-branch

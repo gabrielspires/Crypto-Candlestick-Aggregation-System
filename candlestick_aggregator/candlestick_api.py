@@ -5,7 +5,8 @@ import json
 import pandas as pd
 from typing import Union
 from datetime import datetime
-from database import Database
+
+from candlestick_aggregator.database import Database
 
 
 class CandlestickAPI(object):
@@ -39,8 +40,7 @@ class CandlestickAPI(object):
         return it with the date and time as the key.
 
         Args:
-            currency_pair (str): One of the pairs listed at
-            https://docs.poloniex.com/?shell#currency-pair-ids
+            currency_pair (str): Name of the currency pair ('USDT_BTC' or 'USDT_XMR')
 
         Returns:
             Union[dict, None]: Returns a dictionary with the currency pair as a key with it's value
@@ -67,6 +67,9 @@ class CandlestickAPI(object):
             return None
 
     def fetch_BTC_data(self):
+        """Request the bitcoin data from the extract_coin_info method and
+        append the data to the bitcoin_values dictionary.
+        """
         threading.Timer(0.3, self.fetch_BTC_data).start()
         print("Sending USDT_BTC request at", datetime.now())
         crypto_data = self.extract_coin_info("USDT_BTC")
@@ -77,6 +80,9 @@ class CandlestickAPI(object):
         self.bitcoin_values.update(crypto_data)
 
     def fetch_XMR_data(self):
+        """Request the monero data from the extract_coin_info method and
+        append the data to the monero_values dictionary.
+        """
         threading.Timer(0.3, self.fetch_XMR_data).start()
         print("Sending USDT_XMR request at", datetime.now())
         crypto_data = self.extract_coin_info("USDT_XMR")
@@ -85,15 +91,38 @@ class CandlestickAPI(object):
 
         self.monero_values.update(crypto_data)
 
-    def aggregate_coin_data(self, coin_values: dict, period: str):
+    def aggregate_coin_data(self, coin_values: dict, period: str) -> pd.DataFrame:
+        """Transforms the coin dictionaries into a pandas dataframe and use the resample
+        method to aggregate the values into candles (ohlc).
+
+        Args:
+            coin_values (dict): dictionary to serve as data for the dataframe creation that contains
+            the datatime and value of the trades.
+            period (str): Period of the candle in minutes ('1min', '5min' or '15min').
+
+        Returns:
+            pd.DataFrame: Returns the pandas dataframe with the candles.
+        """
+
         df = pd.DataFrame.from_dict(coin_values, orient="index", columns=["last_price"])
-        # df.index.name = "date"
         df.index = pd.to_datetime(df.index)
+
         ohlc_candles = df["last_price"].resample(period).ohlc()
 
         return ohlc_candles
 
     def fetch_last_candle(self, currency_pair: str, period: str, coin_values: dict) -> dict:
+        """Grabs the last candle created for the period and returns it in a dictionary
+        that also contains the currency pair name.
+
+        Args:
+            currency_pair (str): Name of the currency pair ('USDT_BTC' or 'USDT_XMR').
+            period (str): Period of the candle in minutes ('1min', '5min' or '15min').
+            coin_values (dict): Dictionary with the data and values of the trades.
+
+        Returns:
+            dict: Dictionary withh the ohlc data of the period and currency pair
+        """
         ohlc_df = self.aggregate_coin_data(coin_values, period)
 
         timestamp = ohlc_df.index[-1].to_pydatetime()
@@ -108,6 +137,9 @@ class CandlestickAPI(object):
         return last_candle_info
 
     def create_BTC_candles(self):
+        """Constantly checks if it's the right time to generate a candle and insert it in the DB.
+        Only saves the data at the right time for the period.
+        """
         current_time = time.time()
         wait = False
         currency_pair = "USDT_BTC"
@@ -151,6 +183,9 @@ class CandlestickAPI(object):
         threading.Timer(0.5, self.create_BTC_candles).start()
 
     def create_XMR_candles(self):
+        """Constantly checks if it's the right time to generate a candle and insert it in the DB.
+        Only saves the data at the right time for the period.
+        """
         current_time = time.time()
         wait = False
         currency_pair = "USDT_XMR"

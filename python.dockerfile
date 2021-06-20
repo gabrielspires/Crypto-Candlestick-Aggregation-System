@@ -6,8 +6,9 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 # Creates the alias so that you dont need to use the full poetry path to run it inside the container
 RUN echo "source /root/.poetry/env" >> /root/.bashrc
 
-COPY ./app /var/tmp/www
-WORKDIR /var/tmp/www
+COPY ./candlestick_aggregator /app/candlestick_aggregator
+COPY pyproject.toml python.dockerfile /app/
+WORKDIR /app
 
 # Installs python dependencies using poetry (the alias only works after the container creation)
 RUN /root/.poetry/bin/poetry install
