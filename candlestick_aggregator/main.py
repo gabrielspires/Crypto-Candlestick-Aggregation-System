@@ -7,10 +7,10 @@ if __name__ == "__main__":
     makes sure that the requests are fast enough so that we don't skip seconds and we can
     request data concurrently respecting the limit of 6 requests per second.
     """
-    candle_api = CandlestickAPI()
+    bitcoin_aggregator = CandlestickAPI("USDT_BTC")
+    bitcoin_aggregator.fetch_coin_data()
+    bitcoin_aggregator.create_candles()
 
-    candle_api.fetch_BTC_data()
-    candle_api.fetch_XMR_data()
-
-    candle_api.create_BTC_candles()
-    candle_api.create_XMR_candles()
+    monero_aggregator = CandlestickAPI("USDT_XMR")
+    monero_aggregator.fetch_coin_data()
+    monero_aggregator.create_candles()

@@ -9,9 +9,9 @@ from candlestick_aggregator.database import Database
 
 
 class CandlestickAPI(object):
-    def __init__(self):
-        self.bitcoin_values = {}
-        self.monero_values = {}
+    def __init__(self, currency_pair):
+        self.currency_pair = currency_pair
+        self.trade_values = {}
 
         self.db = Database()
         self.sem = threading.Semaphore()
@@ -34,12 +34,9 @@ class CandlestickAPI(object):
         else:
             return None
 
-    def extract_coin_info(self, currency_pair: str) -> Union[dict, None]:
+    def extract_coin_info(self) -> Union[dict, None]:
         """Extracts the last value of the currency pair we want from the api's response and
         return it with the date and time as the key.
-
-        Args:
-            currency_pair (str): Name of the currency pair ('USDT_BTC' or 'USDT_XMR')
 
         Returns:
             Union[dict, None]: Returns a dictionary with the currency pair as a key with it's value
@@ -59,169 +56,104 @@ class CandlestickAPI(object):
             print("Request error, check internet connection: \n%s\n\n" % (e))
 
         if request_answer is not None:
-            response = {datetime_now: float(request_answer[currency_pair]["last"])}
+            response = {datetime_now: float(request_answer[self.currency_pair]["last"])}
             return response
         else:
             return None
 
-    def fetch_BTC_data(self):
-        """Request the bitcoin data from the extract_coin_info method and
-        append the data to the bitcoin_values dictionary.
+    def fetch_coin_data(self):
+        """Request the coin data from the extract_coin_info method and
+        append the data to the trade_values dictionary.
         """
-        threading.Timer(0.3, self.fetch_BTC_data).start()
-        print("Sending USDT_BTC request at", datetime.now())
-        crypto_data = self.extract_coin_info("USDT_BTC")
+        threading.Timer(0.3, self.fetch_coin_data).start()
+        print("Sending " + self.currency_pair + " request at", datetime.now())
+        crypto_data = self.extract_coin_info()
 
         if crypto_data is None:
             print("Request failed")
         else:
-            self.bitcoin_values.update(crypto_data)
+            self.trade_values.update(crypto_data)
 
-    def fetch_XMR_data(self):
-        """Request the monero data from the extract_coin_info method and
-        append the data to the monero_values dictionary.
-        """
-        threading.Timer(0.3, self.fetch_XMR_data).start()
-        print("Sending USDT_XMR request at", datetime.now())
-        crypto_data = self.extract_coin_info("USDT_XMR")
-        if crypto_data is None:
-            print("Request failed")
-        else:
-            self.monero_values.update(crypto_data)
-
-    def aggregate_coin_data(self, coin_values: dict, period: str) -> pd.DataFrame:
+    def aggregate_coin_data(self, period: str) -> pd.DataFrame:
         """Transforms the coin dictionaries into a pandas dataframe and use the resample
         method to aggregate the values into candles (ohlc).
 
         Args:
-            coin_values (dict): dictionary to serve as data for the dataframe creation that contains
-            the datatime and value of the trades.
             period (str): Period of the candle in minutes ('1min', '5min' or '15min').
 
         Returns:
             pd.DataFrame: Returns the pandas dataframe with the candles.
         """
 
-        df = pd.DataFrame.from_dict(coin_values, orient="index", columns=["last_price"])
+        df = pd.DataFrame.from_dict(self.trade_values, orient="index", columns=["last_price"])
         df.index = pd.to_datetime(df.index)
 
         ohlc_candles = df["last_price"].resample(period).ohlc()
 
         return ohlc_candles
 
-    def fetch_last_candle(self, currency_pair: str, period: str, coin_values: dict) -> dict:
+    def fetch_last_candle(self, period: str) -> dict:
         """Grabs the last candle created for the period and returns it in a dictionary
         that also contains the currency pair name.
 
         Args:
-            currency_pair (str): Name of the currency pair ('USDT_BTC' or 'USDT_XMR').
             period (str): Period of the candle in minutes ('1min', '5min' or '15min').
             coin_values (dict): Dictionary with the data and values of the trades.
 
         Returns:
             dict: Dictionary withh the ohlc data of the period and currency pair
         """
-        ohlc_df = self.aggregate_coin_data(coin_values, period)
+        ohlc_df = self.aggregate_coin_data(period)
 
         timestamp = ohlc_df.index[-1].to_pydatetime()
         candle_values = ohlc_df.iloc[-1].to_dict()
 
         last_candle_info = {}
-        last_candle_info["currency_pair"] = currency_pair
+        last_candle_info["currency_pair"] = self.currency_pair
         last_candle_info["period"] = period
         last_candle_info["date"] = timestamp.strftime("%Y-%m-%d %H:%M:%S")
         last_candle_info.update(candle_values)
 
         return last_candle_info
 
-    def create_BTC_candles(self):
+    def save_candle(self, period: str) -> None:
+        """Fetch the last candle and save it in the database
+
+        Args:
+            period (str): Period of the candle in minutes ('1min', '5min' or '15min').
+        """
+        print("Generating " + period + " candle for " + self.currency_pair + "...")
+
+        self.sem.acquire()
+
+        last_1min_candle = self.fetch_last_candle(period)
+        self.db.insert(last_1min_candle)
+
+        self.sem.release()
+
+    def create_candles(self):
         """Constantly checks if it's the right time to generate a candle and insert it in the DB.
         Only saves the data at the right time for the period.
         """
         current_time = time.time()
         wait = False
-        currency_pair = "USDT_BTC"
 
         if int(current_time) % (60) == 59:
-            print("Generating 1min candle for USDT_BTC...")
             period = "1min"
-            self.sem.acquire()
-
-            last_1min_candle = self.fetch_last_candle(currency_pair, period, self.bitcoin_values)
-            self.db.insert(last_1min_candle)
-
-            self.sem.release()
+            self.save_candle(period)
             wait = True
         if int(time.time()) % (5 * 60) == (5 * 60 - 1):
-            print("Generating 5min candle for USDT_BTC...")
             period = "5min"
-            self.sem.acquire()
-
-            last_5min_candle = self.fetch_last_candle(currency_pair, period, self.bitcoin_values)
-            self.db.insert(last_5min_candle)
-
-            self.sem.release()
+            self.save_candle(period)
             wait = True
         if int(time.time()) % (15 * 60) == (15 * 60 - 1):
-            print("Generating 15min candle for USDT_BTC...")
             period = "15min"
-            self.sem.acquire()
-
-            last_15min_candle = self.fetch_last_candle(currency_pair, period, self.bitcoin_values)
-            self.db.insert(last_15min_candle)
-
-            self.sem.release()
+            self.save_candle(period)
             wait = True
 
-            self.bitcoin_values.clear()
+            self.trade_values.clear()
 
         if wait is True:
             time.sleep(1)
 
-        threading.Timer(0.5, self.create_BTC_candles).start()
-
-    def create_XMR_candles(self):
-        """Constantly checks if it's the right time to generate a candle and insert it in the DB.
-        Only saves the data at the right time for the period.
-        """
-        current_time = time.time()
-        wait = False
-        currency_pair = "USDT_XMR"
-
-        if int(current_time) % (60) == 59:
-            print("Generating 1min candle for USDT_XMR...")
-            period = "1min"
-            self.sem.acquire()
-
-            last_1min_candle = self.fetch_last_candle(currency_pair, period, self.monero_values)
-            self.db.insert(last_1min_candle)
-
-            self.sem.release()
-            wait = True
-        if int(time.time()) % (5 * 60) == (5 * 60 - 1):
-            print("Generating 5min candle for USDT_XMR...")
-            period = "5min"
-            self.sem.acquire()
-
-            last_5min_candle = self.fetch_last_candle(currency_pair, period, self.monero_values)
-            self.db.insert(last_5min_candle)
-
-            self.sem.release()
-            wait = True
-        if int(time.time()) % (15 * 60) == (15 * 60 - 1):
-            print("Generating 15min candle for USDT_XMR...")
-            period = "15min"
-            self.sem.acquire()
-
-            last_15min_candle = self.fetch_last_candle(currency_pair, period, self.monero_values)
-            self.db.insert(last_15min_candle)
-
-            self.sem.release()
-            wait = True
-
-            self.monero_values.clear()
-
-        if wait is True:
-            time.sleep(1)
-
-        threading.Timer(0.5, self.create_XMR_candles).start()
+        threading.Timer(0.5, self.create_candles).start()
