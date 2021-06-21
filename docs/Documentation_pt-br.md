@@ -35,7 +35,7 @@ Existem dois aspectos do sistema que devem rodar o tempo todo, a requisição de
 
 Também gostaria de ter feito os testes de integração, não tenho muita experiência com isso e preferi focar em fazer os testes de unidade.
 
-Alguns métodos ficaram um pouco grandes, seria boa prática quebra-los em métodos menores, pretendo fazer isso no futuro.
+~~Alguns métodos ficaram um pouco grandes, seria boa prática quebra-los em métodos menores, pretendo fazer isso no futuro.~~ _Melhoria implementada._
 
 ## Principais dificuldades
 

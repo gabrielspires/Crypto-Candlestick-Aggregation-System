@@ -37,7 +37,7 @@ There are two aspects of the system that must run all the time, the data request
 
 I would also like to have done the integration tests, I don't have much experience with that and I preferred to focus on doing the unit tests.
 
-Some methods got a little big, it would be good practice to break them down into smaller methods, I plan to do that in the future. 
+~~Some methods got a little big, it would be good practice to break them down into smaller methods, I plan to do that in the future.~~ _Improvement implemented._
 
 ## Main difficulties
 
