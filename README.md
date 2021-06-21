@@ -6,20 +6,18 @@
     <img src="docs/img/bitcoin-btc-logo.png" alt="Logo" width="80" height="80">
     <img src="docs/img/monero-xmr-logo.png" alt="Logo" width="80" height="80">
 
-  <h3 align="center">Sistema de agregação de dados de cotações de criptomoedas em tempo real</h3>
+  <h3 align="center">Real-time cryptocurrency exchange trade data aggregation system </h3>
 
   <p align="center">
-    Esse projeto faz uso da API pública <a href="https://docs.poloniex.com/">Poloniex</a>.
+    This project makes use of the public API <a href="https://docs.poloniex.com/">Poloniex</a>.
     <br />
     <br />
-    <a href="https://github.com/gabrielspires/Desafio-Tecnico/tree/main/docs"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/gabrielspires/Desafio-Tecnico/tree/main/docs"><strong>Explore the documentation »</strong></a>
     <br />
     <br />
-    <strong>
     <a href="https://github.com/gabrielspires/Desafio-Tecnico/issues">Report Bug</a>
     ·
     <a href="https://github.com/gabrielspires/Desafio-Tecnico/issues">Request Feature</a>
-    </strong>
   </p>
 </p>
 
@@ -42,8 +40,6 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <!-- <li><a href="#usage">Usage</a></li> -->
-    <li><a href="#main-difficulties">Main difficulties</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#contact">Contact</a></li>
   </ol>
@@ -54,7 +50,11 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-....
+This project aims at fetching exchange trade data from two popular cryptocurrencies, Monero and Bitcoin, and aggregating it in the OHLC format that can be used to create candlesticks. The data used is fetched in realtime from the [Poloniex API](https://docs.poloniex.com/?shell#http-api) and inserted in a local MySQL database after it is aggregated by period of time. The processed data can then be accessed by other applications to create charts and visualizations like the one below for example.
+
+<p align="center">
+    <img src="docs/img/candle_chart.png" alt="Candlestick chart" width="100%">
+</p>
 
 ### Built With
 
@@ -71,29 +71,9 @@ To get a local copy up and running you'll need the folowing.
 
 ### Prerequisites
 
-* docker
-  ```sh
-  sudo apt-get remove docker docker-engine docker.io containerd runc
-  sudo apt-get update
-  sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-  sudo apt-get update
-  sudo apt-get install docker-ce docker-ce-cli containerd.io  
-  ```
-* docker-compose
-  ```sh
-  sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-  sudo chmod +x /usr/local/bin/docker-compose
-  ```
-<!-- * prerequisite
-  ```sh
-   
-  ``` -->
+* [Docker](https://docs.docker.com/engine/install/)
+  
+* [Docker-compose](https://docs.docker.com/compose/install/)
 
 ### Installation
 
@@ -106,16 +86,6 @@ To get a local copy up and running you'll need the folowing.
    docker-compose up -d
    ```
 
-<!-- USAGE EXAMPLES -->
-<!-- ## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_ -->
-
-## Main difficulties 
-
-...
 <!-- CONTRIBUTING -->
 ## Contributing
 
