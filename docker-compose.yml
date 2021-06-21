@@ -35,5 +35,3 @@ services:
 networks:
   production_network:
     driver: bridge
-
-# poetry run pytest tests --cov=candlestick_aggregator --cov-report=html --cov-branch
