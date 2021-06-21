@@ -10,5 +10,5 @@ COPY ./candlestick_aggregator /app/candlestick_aggregator
 COPY pyproject.toml python.dockerfile /app/
 WORKDIR /app
 
-# Installs python dependencies using poetry (the alias only works after the container creation)
+# Installs python dependencies using poetry
 RUN /root/.poetry/bin/poetry install

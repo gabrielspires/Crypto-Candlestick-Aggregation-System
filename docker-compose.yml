@@ -1,7 +1,7 @@
 version: '3.1'
 
 services:
-  # Banco de dados (MySQL)
+  # Database (MySQL)
   mariadb:
     container_name: mariadb_1
     image: mariadb
@@ -13,7 +13,7 @@ services:
     networks:
       - production_network
   
-  # Aplicação (Python+Poetry)
+  # Application (Python+Poetry)
   candle_aggregator:
     build: 
       dockerfile: python.dockerfile
