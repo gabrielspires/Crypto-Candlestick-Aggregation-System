@@ -13,6 +13,12 @@
     <br />
     <br />
     <a href="https://github.com/gabrielspires/Desafio-Tecnico/tree/main/docs"><strong>Explore the documentation »</strong></a>
+    <a href="https://github.com/gabrielspires/Desafio-Tecnico/tree/main/docs/Documentation_pt-br.md">
+    <img src="https://raw.githubusercontent.com/stevenrskelton/flag-icon/master/png/16/country-4x3/br.png" alt="PT-BR">
+    </a>
+    <a href="https://github.com/gabrielspires/Desafio-Tecnico/tree/main/docs/Documentation_en-us.md">
+    <img src="https://raw.githubusercontent.com/stevenrskelton/flag-icon/master/png/16/country-4x3/us.png" alt="EN-US">
+    </a>
     <br />
     <br />
     <a href="https://github.com/gabrielspires/Desafio-Tecnico/issues">Report Bug</a>
