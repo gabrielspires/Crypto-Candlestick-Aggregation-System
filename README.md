@@ -50,7 +50,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project aims at fetching exchange trade data from two popular cryptocurrencies, Monero and Bitcoin, and aggregating it in the OHLC format that can be used to create candlesticks. The data used is fetched in realtime from the [Poloniex API](https://docs.poloniex.com/?shell#http-api) and inserted in a local MySQL database after it is aggregated by period of time. The processed data can then be accessed by other applications to create charts and visualizations like the one below for example.
+This project aims at fetching exchange trade data from two popular cryptocurrencies, Monero and Bitcoin, and aggregating it in candlesticks with the information for open, high, low and close for the periods of 1, 5 and 15 minutes. The data used is fetched in realtime from the [Poloniex API](https://docs.poloniex.com/?shell#http-api) and inserted in a local MySQL database after it is aggregated by period of time. The processed data can then be accessed by other applications to create charts and visualizations like the one below for example.
 
 <p align="center">
     <img src="docs/img/candle_chart.png" alt="Candlestick chart" width="100%">
