@@ -33,7 +33,7 @@ There are two aspects of the system that must run all the time, the data request
 
 ## Possible improvements
 
-One of the main points I intend to improve on the system is to make it more generic. Currently it is only possible to fetch the data and create Bitcoin and Monero candles. A way to improve this would be to get the currency codes using the api's 'returnCurrencies' command and give the user the option of which currency to use showing the codes and names on the screen, or passing the code of the pair in the class constructor.
+~~One of the main points I intend to improve on the system is to make it more generic. Currently it is only possible to fetch the data and create Bitcoin and Monero candles. A way to improve this would be to get the currency codes using the api's 'returnCurrencies' command and give the user the option of which currency to use showing the codes and names on the screen, or passing the code of the pair in the class constructor.~~ _Improvement implemented._
 
 I would also like to have done the integration tests, I don't have much experience with that and I preferred to focus on doing the unit tests.
 

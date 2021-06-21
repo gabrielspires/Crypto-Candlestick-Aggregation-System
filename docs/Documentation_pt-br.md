@@ -31,7 +31,7 @@ Existem dois aspectos do sistema que devem rodar o tempo todo, a requisição de
 
 ## Possíveis melhorias
 
-Um dos principais pontos que eu pretendo melhorar no sistema é deixar ele mais genérico. Atualmente só é possível buscar os dados e criar candles de Bitcoin e Monero. Um jeito de melhorar isso seria buscar os códigos das moedas usando o comando 'returnCurrencies' da api e dar ao usuário a opção de qual moeda usar mostrando os códigos e nomes na tela, ou então passando o código do par no construtor da classe.
+~~Um dos principais pontos que eu pretendo melhorar no sistema é deixar ele mais genérico. Atualmente só é possível buscar os dados e criar candles de Bitcoin e Monero. Um jeito de melhorar isso seria buscar os códigos das moedas usando o comando 'returnCurrencies' da api e dar ao usuário a opção de qual moeda usar mostrando os códigos e nomes na tela, ou então passando o código do par no construtor da classe.~~ _Melhoria implementada._
 
 Também gostaria de ter feito os testes de integração, não tenho muita experiência com isso e preferi focar em fazer os testes de unidade.
 
