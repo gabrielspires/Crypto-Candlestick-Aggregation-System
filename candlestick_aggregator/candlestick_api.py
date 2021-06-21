@@ -75,7 +75,7 @@ class CandlestickAPI(object):
             self.trade_values.update(crypto_data)
 
     def aggregate_coin_data(self, period: str) -> pd.DataFrame:
-        """Transforms the coin dictionaries into a pandas dataframe and use the resample
+        """Transforms the coin dictionary into a pandas dataframe and use the resample
         method to aggregate the values into candles (ohlc).
 
         Args:
