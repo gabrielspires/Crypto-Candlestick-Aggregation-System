@@ -5,7 +5,6 @@ import json
 import pandas as pd
 from typing import Union
 from datetime import datetime
-
 from candlestick_aggregator.database import Database
 
 
@@ -53,9 +52,11 @@ class CandlestickAPI(object):
 
         request_answer = None
         datetime_now = None
-
-        datetime_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        request_answer = self.get_market_data(api_url)
+        try:
+            datetime_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            request_answer = self.get_market_data(api_url)
+        except requests.exceptions.ConnectionError as e:
+            print("Request error, check internet connection: \n%s\n\n" % (e))
 
         if request_answer is not None:
             response = {datetime_now: float(request_answer[currency_pair]["last"])}
@@ -73,8 +74,8 @@ class CandlestickAPI(object):
 
         if crypto_data is None:
             print("Request failed")
-
-        self.bitcoin_values.update(crypto_data)
+        else:
+            self.bitcoin_values.update(crypto_data)
 
     def fetch_XMR_data(self):
         """Request the monero data from the extract_coin_info method and
@@ -85,8 +86,8 @@ class CandlestickAPI(object):
         crypto_data = self.extract_coin_info("USDT_XMR")
         if crypto_data is None:
             print("Request failed")
-
-        self.monero_values.update(crypto_data)
+        else:
+            self.monero_values.update(crypto_data)
 
     def aggregate_coin_data(self, coin_values: dict, period: str) -> pd.DataFrame:
         """Transforms the coin dictionaries into a pandas dataframe and use the resample
